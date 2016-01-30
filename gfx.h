@@ -73,6 +73,14 @@ namespace GFX_NS
       return &e[0];
     }
 
+    const static Vector Zero;
+    const static Vector Identity;
+    const static Vector PosX;
+    const static Vector NegX;
+    const static Vector PosY;
+    const static Vector NegY;
+    const static Vector PosZ;
+    const static Vector NegZ;
   };
 
   struct Matrix
@@ -242,7 +250,7 @@ namespace GFX_NS
   struct Camera
   {
     //
-    static Camera LookAtPerspective(const Vector& eye, const Vector& target, float fov = 75.0f, float near = 1.0f, float far = 100.0f);
+    static Camera LookAtPerspective(const Vector& eye, const Vector& target, float width, float height, float fov = 75.0f, float near = 1.0f, float far = 100.0f);
 
     //
     static Camera LookAtOrthographic(const Vector& eye, const Vector& target, float aspect = 75.0f, float near = 1.0f, float far = 100.0f);
@@ -260,7 +268,7 @@ namespace GFX_NS
 
   void pushView(uint8_t view);
 
-  void setView();
+  void setView(uint8_t view);
 
   void popView();
 
@@ -279,7 +287,7 @@ namespace GFX_NS
   void setMatrices(const Camera& camera, const Matrix& model = Matrix());
 
   //
-  void setMatrices(const Matrix& perspective, const Matrix& view, const Matrix& model = Matrix());
+  void setMatrices(const Matrix& projection, const Matrix& view, const Matrix& model = Matrix());
   
   //
   void pushProjectionMatrix(const Matrix& m);
@@ -398,7 +406,13 @@ namespace GFX_NS
   //
   inline void srt(float sx, float sy, float sz, float ax, float ay, float az, float tx, float ty, float tz)
   {
-    multiplyModelMatrix(Matrix::SRT(ax, ay, az));
+    multiplyModelMatrix(Matrix::SRT(sx, sy, sz, ax, ay, az, tx, ty, tz));
+  }
+
+  //
+  inline void srt(const Vector& scale, const Vector& rotation, const Vector& translation)
+  {
+    multiplyModelMatrix(Matrix::SRT(scale, rotation, translation));
   }
 
   //
@@ -494,9 +508,9 @@ namespace GFX_NS
       value = v;
     }
 
-    inline State& toggle(bool isEnabled, uint64_t flag)
+    inline State& toggle(bool enabled, uint64_t flag)
     {
-      if (flag)
+      if (enabled)
         value |= flag;
       else
         value &= ~flag;

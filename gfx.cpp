@@ -31,6 +31,15 @@ namespace GFX_NS
 
   const State State::DEFAULT = State(BGFX_STATE_DEFAULT);
 
+  const Vector Vector::Zero(0);
+  const Vector Vector::Identity(0,0,0,1);
+  const Vector Vector::PosX(1,0,0,0);
+  const Vector Vector::NegX(-1,0,0,0);
+  const Vector Vector::PosY(0,1,0,0);
+  const Vector Vector::NegY(0,-1,0,0);
+  const Vector Vector::PosZ(0,0,1,0);
+  const Vector Vector::NegZ(0,0,-1,0);
+
   Context::Context()
   {
     view.push_back(Matrix());
@@ -53,6 +62,19 @@ namespace GFX_NS
   Context::~Context()
   {
   }
+  
+  Camera Camera::LookAtPerspective(const Vector& eye, const Vector& target, float width, float height, float fov, float near, float far)
+  {
+
+    Camera camera;
+    bx::mtxLookAt(camera.view.ptr(), eye.ptr(), target.ptr());
+    bx::mtxProj(camera.projection.ptr(), fov, width / height, near, far);
+    return camera;
+  }
+
+//  Camera Camera::LookAtOrthographic(const Vector& eye, const Vector& target, float aspect, float near, float far)
+//  {
+//  }
 
   void setContext(Context* ctx)
   {
@@ -67,7 +89,7 @@ namespace GFX_NS
   void pushView(uint8_t view)
   {
     auto ctx = getContext();
-    ctx->views.push_back(0);
+    ctx->views.push_back(view);
     ctx->viewsVersion++;
   }
 
@@ -101,7 +123,7 @@ namespace GFX_NS
 
   void touch(uint8_t id)
   {
-    bgfx::touch(0);
+    bgfx::touch(id);
   }
 
   void setProgram(const bgfx::ProgramHandle& program)
@@ -123,7 +145,20 @@ namespace GFX_NS
     ctx->modelVersion++;
   }
 
-  void pushProjection(const Matrix& m)
+  void setMatrices(const Matrix & projection, const Matrix & view, const Matrix & model)
+  {
+    auto ctx = getContext();
+    ctx->projection.back() = projection;
+    ctx->projectionVersion++;
+
+    ctx->view.back() = view;
+    ctx->viewVersion++;
+
+    ctx->model.back() = model;
+    ctx->modelVersion++;
+  }
+
+  void pushProjectionMatrix(const Matrix& m)
   {
     auto ctx = getContext();
     ctx->projection.push_back(m);

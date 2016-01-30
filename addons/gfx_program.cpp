@@ -34,6 +34,7 @@ namespace GFX_NS
 
       switch(bgfx::getRendererType())
       {
+        default:
         case bgfx::RendererType::Null: break;
         case bgfx::RendererType::Direct3D9:
         {
@@ -56,6 +57,16 @@ namespace GFX_NS
           strcpy(path, "shader/glsl/");
         }
         break;
+        case bgfx::RendererType::Vulkan:
+        {
+          strcpy(path, "shader/vulkan/");
+        }
+        break;
+        case bgfx::RendererType::Metal:
+        {
+          strcpy(path, "shader/vulkan/");
+        }
+        break;
       }
 
       strcat(path, shaderName);
@@ -63,7 +74,7 @@ namespace GFX_NS
 
       if (bx::open(reader, path) == 0)
       {
-        auto size = bx::getSize(reader);
+        uint32_t size = (uint32_t) bx::getSize(reader);
         auto mem = bgfx::alloc(size + 1);
         bx::read(reader, mem->data, size);
         bx::close(reader);
