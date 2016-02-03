@@ -74,7 +74,7 @@ namespace GFX_NS
       {
         update();
         draw();
-        gfx::frame();
+        bgfx::frame();
       }
     }
 
