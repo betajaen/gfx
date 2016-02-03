@@ -265,9 +265,10 @@ namespace GFX_NS
       (*value) = 0;
       for(int i=0;i < (sizeof(T) * 2);i++)
       {
-        char c = (*s++);
+        char c = (*s);
         if (c == '\0' || isalnum(c) == false)
           break;
+        s++;
         int x = readHexDigit(c);
         (*value) = ((*value) * 16) + x;
       }
@@ -280,10 +281,10 @@ namespace GFX_NS
 
       while(true)
       {
-        char c = (*s++);
+        char c = (*s);
         if (c == '\0' || isdigit(c) == false)
           break;
-
+        s++;
         (*value) = ((*value) * 10) + (c - '0');
       }
 
